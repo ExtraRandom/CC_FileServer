@@ -1,0 +1,195 @@
+--download/upload/run
+version = "1.6"
+
+ip = "0.0.0.0" --Change to your IP (local ip if server is on same network, public if not)
+port = "5000" --If you change the port in the file server change it here as well
+
+silent = false
+
+function download(filename)
+    resp = http.get("http://"..ip..":"..port.."/"..filename)
+    if resp then
+        data = resp.readAll()
+        if data == "No Data" then
+            print("File '"..filename.."' not found on server.")
+        else
+            if fs.exists(filename) then
+                if silent == false then
+                    print("File already existed, Overwritten")
+                end
+                fw = fs.open(filename, "w")
+                fw.write(data)
+                fw.close()
+                --print("Saved "..filename)
+            else
+                --print("")
+                if silent == false then
+                    print("'"..filename.."' found on server, saved locally.")
+                end
+                fw = fs.open(filename, "w")
+                fw.write(data)
+                fw.close()
+            end
+        end
+    else
+        print("No Response from Server - Might be down")
+        return
+    end
+end
+
+function split(inputString)
+    local t = {}
+    local i = 1
+    for str in string.gmatch(inputString, "([^,]+)") do
+        t[i] = str
+        i=i+1
+    end
+    return t
+end
+
+function upload(file)
+    resp = http.get("http://"..ip..":"..port.."/s/ns")
+
+    if resp then
+        Table = split(tostring(resp.readAll()))
+
+        if fs.exists(file) == false then
+            print("File doesn't exist on local machine")
+            return
+        end
+
+        for i=1,#Table do
+            if file == Table[i] then
+                print("File already exists on server")
+                return
+            end
+        end
+
+        rf = fs.open(file, "r")
+        data = rf.readAll()
+        rf.close()
+
+
+        h = http.post("http://"..ip..":"..port.."/u/"..file,
+            "data="..data)
+
+        if h then
+            print("Successfully Uploaded File '"..file.."' to server.")
+        else
+            print("Error uploading file '"..file.."' to the server.")
+        end
+    else
+        print("No Response from Server - Might be down")
+        return
+    end
+end
+
+function run(file)
+    resp = http.get("http://"..ip..":"..port.."/"..file)
+    if resp then
+        data = resp.readAll()
+        if data == "No Data" then
+            print("File '"..file.."' not found on server.")
+        else
+            print("File found on server, running now.")
+            --Code here is taken from and a slighty modifed version of:
+            --https://github.com/alekso56/ComputercraftLua/blob/master/rom/programs/http/pastebin
+            func, err = load(data)
+            if not func then
+                printError(err)
+                return
+            end
+            local s, msg = pcall(func)
+            if not s then
+                printError(msg)
+            end
+
+
+        end
+    else
+        print("No Response from Server - Might be down")
+        return
+    end
+end
+
+function help()
+    print("dur - Version "..version)
+    print("Usage: ")
+    print("'dur d <file>' - downloads file from server")
+    print("'dur u <file>' - uploads file to server")
+    print("'dur r <file>' - runs file from server")
+    return
+end
+
+function list()
+    resp = http.get("http://"..ip..":"..port.."/s/list")
+    print(resp.readAll())
+end
+
+function checkUp()
+    resp = http.request("http://"..ip..":"..port.."/")
+    --check homepage to see if server is up
+
+    os.startTimer(3)
+    loop = true
+    while loop do
+        local event, url, handle = os.pullEvent()
+        if event == "timer" then
+            print("Server is down.")
+            loop = false
+            return false
+        elseif event == "http_success" then
+            loop=false
+            return true
+        end
+    end
+end
+
+if checkUp() == false then
+    return
+end
+
+args={...}
+
+
+
+if args[1] then
+    --def_mode = false
+    mode = args[1]
+    if mode == "d" or mode == "down" or mode == "download" then
+        mode = "d"
+    elseif mode == "u" or mode == "up" or mode == "upload" then
+        mode = "u"
+    elseif mode == "r" or mode == "run" then
+        mode = "r"
+    elseif mode == "l" or mode == "list" then
+        list()
+        return
+    else
+        help()
+        return
+    end
+end
+
+if args[3] then
+    be_silent = args[3]
+    if be_silent == "s" or be_silent == "silent" then
+        silent = true
+    end
+end
+
+if args[2] then
+    -- def_mode = false
+    file = args[2]
+    if mode == "d" then
+        download(file)
+    elseif mode == "u" then
+        upload(file)
+    elseif mode == "r" then
+        run(file)
+    end
+else
+    help()
+    return
+    --print("Error has occured. (Check args[2])")
+end
