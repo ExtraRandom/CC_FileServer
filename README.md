@@ -1,4 +1,4 @@
-Made to make push updates for programs to minecraft easier. No longer updated as I'm not currently playing Minecraft and the program works fine as it is (for me at least, you may experience some issues which you're welcome to fix yourself :) )
+Made to make pushing updates for programs to minecraft easier. No longer updated as I'm not currently playing Minecraft and the program works fine as it is (for me at least, you may experience some issues which you're welcome to fix yourself :) ).
 
 
 # ComputerCraft File Server
@@ -12,6 +12,7 @@ Run ```pip install -r requirements.txt``` - Will install Flask if you don't alre
 
 (In game) Run [```pastebin get cLAuzykK dur```](http://pastebin.com/cLAuzykK) on a computer (dur standing for Download Upload Run)
 
+Edit 'dur' and change the ip and port to the ip and port you are running this program on.
 
 ##Planned Features
 - Require an API Key to download programs
