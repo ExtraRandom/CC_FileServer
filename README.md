@@ -1,3 +1,6 @@
+Made to make push updates for programs to minecraft easier. No longer updated as I'm not currently playing Minecraft and the program works fine as it is (for me at least, you may experience some issues which you're welcome to fix yourself :) )
+
+
 # ComputerCraft File Server
 
 A Simple (WIP) File Server that allows you to write a program for ComputerCraft and then send that file to the game without having to go through pastebin. 
