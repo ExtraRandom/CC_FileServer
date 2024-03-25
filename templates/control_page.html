@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Remote Control</title>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript"  src="{{ url_for('static', filename='js/control.js') }}"></script>
+    <style>
+        button {
+            padding: 10px;
+            width: 150px;
+            height: 70px;
+        }
+    </style>
+</head>
+<body>
+
+    <button id="up">Up</button>
+    <button id="forwards">Forwards</button>
+    <button id="down">Down</button>
+    <br>
+    <button id="turnLeft">Turn Left</button>
+    <button id="backwards">Backwards</button>
+    <button id="turnRight">Turn Right</button>
+    <br>
+
+    <br>
+    <button id="digFront">Dig block front</button>
+    <button id="digUp">Dig block above</button>
+    <button id="digDown">Dig block below</button>
+</body>
+</html>

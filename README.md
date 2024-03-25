@@ -1,7 +1,5 @@
-Worked on it a little mostly for fun will update it once everything is ironed out.
-
-
-Made to make pushing updates for programs to minecraft easier. No longer updated as I'm not currently playing Minecraft and the program works fine as it is (for me at least, you may experience some issues which you're welcome to fix yourself :) ).
+Made to make pushing updates for programs to minecraft easier. Won't be updated often
+as I don't play Minecraft much anymore, and it works well enough for me in the state it is currently in.
 
 
 # ComputerCraft File Server
@@ -21,7 +19,7 @@ Edit 'dur' and change the ip and port to the ip and port you are running this pr
 
 ##Planned Features
 - Split the config from the main program (Lua)
-- Have some sort of version systeme (Python and Lua)
+- Have some sort of version system (Python (Done) and Lua (WIP))
 
  
 

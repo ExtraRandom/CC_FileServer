@@ -1,32 +1,39 @@
-from flask import Flask, request, send_from_directory
+from flask import Flask, request, send_from_directory, render_template
 import os
+from requests import get
 
 app = Flask(__name__)
 debug_mode = False
 cwd = os.getcwd()
 
-print(os.path.realpath(__file__))
+s_folder = os.path.join(cwd, "files")
 
-s = "\ "
-s_folder = "{}{}files".format(cwd, s.replace(" ", ""))
+try:
+    print("Public IP is {}:27000".format(get("https://api.ipify.org/").text))
+except Exception as e:
+    print("Error getting IP: {}".format(e))
+
+# REMOTE RELATED
+valid_commands = ["up", "down", "left", "right", "forward", "back",
+                  "dig", "dig up", "dig down"]
+command_queue = []
 
 
 @app.route('/')
 def index():
-    # log("Homepage")
-    # return render_template('index.html')
-    return 'This is the homepage yo'
+    """Homepage"""
+    # log("Homepage")     # return render_template('index.html')
+    return 'Homepage'
 
 
-@app.route('/<name>', methods=['GET'])
+@app.route('/cc/d/<name>', methods=['GET'])
 def search(name):
-    # log("Request for {} file.".format(name))
-    print("Received Request for File: {}".format(name))
+    """
+    If 'name' is a file on the server then send it
+    """
 
-    # s_file = "{}".format(name)
-    s_file = name
-
-    # print(os.path.join(s_folder, s_file))
+    # log("Searching for {} file.".format(name))
+    s_file = "{}".format(name)
 
     if os.path.exists(os.path.join(s_folder, s_file)):
         print("Sending a file.")
@@ -36,26 +43,31 @@ def search(name):
         return 'No Data'
 
 
-@app.route("/u/<name>", methods=['POST'])
+@app.route("/cc/u/<name>", methods=['POST'])
 def upload(name):
+    """
+    Accept upload of file 'name' if it doesn't already exist on the server
+    """
 
-    # print("upload ")
     data = request.form['data']
 
     if os.path.exists(os.path.join(s_folder, name)):
-        print("User tried to upload file that already exists on server.")
+        print("File exists, won't overwrite")
+        return 'No'
     else:
-        print("User uploaded new file, saving now.")
+        print("File doesnt exist, writing new file")
 
         file = open(os.path.join(s_folder, name), "w+")
         file.writelines(data)
         file.close()
+        return 'Yes'
 
-    return 'Hello there'
 
-
-@app.route("/s/<command>")
+@app.route("/cc/s/<command>")
 def status(command):
+    """
+    Return list of files
+    """
 
     string = ""
     ns_string = ""
@@ -70,6 +82,36 @@ def status(command):
         return string
     elif command == "ns":
         return ns_string
+
+
+@app.route("/cc/i/inspect", methods=['POST'])
+def inspect():
+    data = request.form['data']
+    print(data)
+    return "ty"
+
+
+@app.route("/cc/r/remote")
+def remote_control():
+    if len(command_queue) > 0:
+        cmd = command_queue.pop(0)
+        return cmd
+    else:
+        return "Idle"
+
+
+@app.route("/control")
+def remote_control_control_page():
+    return render_template('control_page.html')
+
+
+@app.route("/control_queue_add", methods=['POST'])
+def remote_control_add_to_queue():
+    data = request.form['cmd']
+    print(data)
+    command_queue.append(data)
+    print(command_queue)
+    return "Hello"
 
 
 if __name__ == '__main__':
